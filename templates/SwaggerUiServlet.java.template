@@ -1,0 +1,118 @@
+package com.example.openapi;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * TEMPLATE (Java 7 compatible).
+ *
+ * <p>Serves the Swagger UI static assets bundled by the {@code org.webjars:swagger-ui}
+ * dependency. Map this servlet to {@code /swagger-ui/*} (see web-xml-snippet.xml).</p>
+ *
+ * <p>Requesting {@code /swagger-ui/} (root) returns a small HTML page that loads
+ * Swagger UI and points it at {@code openapi.json}. All other paths are streamed
+ * directly from the webjar resources.</p>
+ *
+ * <p>Update {@code SWAGGER_UI_VERSION} to match the webjar version in pom.xml, and
+ * {@code SPEC_URL} to match the context path. Rename the package to match the project.</p>
+ */
+public class SwaggerUiServlet extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
+
+    private static final String SWAGGER_UI_VERSION = "3.52.5";
+    private static final String WEBJAR_BASE =
+            "/META-INF/resources/webjars/swagger-ui/" + SWAGGER_UI_VERSION + "/";
+
+    /** URL the UI loads the spec from. Adjust the context path as needed. */
+    private static final String SPEC_URL = "openapi.json";
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String pathInfo = request.getPathInfo();
+
+        // Root request -> serve a bootstrap HTML page wired to our spec.
+        if (pathInfo == null || "/".equals(pathInfo) || pathInfo.length() == 0) {
+            serveIndex(response);
+            return;
+        }
+
+        // Otherwise stream the requested asset from the webjar.
+        String resource = WEBJAR_BASE + pathInfo.substring(1);
+        InputStream in = getClass().getResourceAsStream(resource);
+        if (in == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Not found: " + pathInfo);
+            return;
+        }
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType(guessContentType(pathInfo));
+        OutputStream out = response.getOutputStream();
+        try {
+            byte[] buffer = new byte[4096];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            out.flush();
+        } finally {
+            in.close();
+        }
+    }
+
+    private void serveIndex(HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("text/html");
+        response.setCharacterEncoding("UTF-8");
+
+        String html =
+            "<!DOCTYPE html>\n" +
+            "<html>\n" +
+            "<head>\n" +
+            "  <meta charset=\"UTF-8\"/>\n" +
+            "  <title>API Docs</title>\n" +
+            "  <link rel=\"stylesheet\" href=\"./swagger-ui.css\"/>\n" +
+            "</head>\n" +
+            "<body>\n" +
+            "  <div id=\"swagger-ui\"></div>\n" +
+            "  <script src=\"./swagger-ui-bundle.js\"></script>\n" +
+            "  <script src=\"./swagger-ui-standalone-preset.js\"></script>\n" +
+            "  <script>\n" +
+            "    window.onload = function() {\n" +
+            "      window.ui = SwaggerUIBundle({\n" +
+            "        url: '" + SPEC_URL + "',\n" +
+            "        dom_id: '#swagger-ui',\n" +
+            "        presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset]\n" +
+            "      });\n" +
+            "    };\n" +
+            "  </script>\n" +
+            "</body>\n" +
+            "</html>\n";
+
+        response.getWriter().write(html);
+    }
+
+    private String guessContentType(String path) {
+        if (path.endsWith(".css")) {
+            return "text/css";
+        }
+        if (path.endsWith(".js")) {
+            return "application/javascript";
+        }
+        if (path.endsWith(".png")) {
+            return "image/png";
+        }
+        if (path.endsWith(".html")) {
+            return "text/html";
+        }
+        return "application/octet-stream";
+    }
+}

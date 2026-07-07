@@ -1,0 +1,31 @@
+<!--
+  web.xml SNIPPET for the Java 7 static-spec + Swagger UI approach.
+  Merge these <servlet> / <servlet-mapping> entries into the project's web.xml.
+  Update the servlet-class package to match where you place the template classes.
+-->
+
+<!-- Serves /openapi.yaml and /openapi.json from the classpath -->
+<servlet>
+    <servlet-name>OpenApiSpecServlet</servlet-name>
+    <servlet-class>com.example.openapi.OpenApiSpecServlet</servlet-class>
+    <load-on-startup>3</load-on-startup>
+</servlet>
+<servlet-mapping>
+    <servlet-name>OpenApiSpecServlet</servlet-name>
+    <url-pattern>/openapi.yaml</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+    <servlet-name>OpenApiSpecServlet</servlet-name>
+    <url-pattern>/openapi.json</url-pattern>
+</servlet-mapping>
+
+<!-- Serves Swagger UI at /swagger-ui/ from the swagger-ui webjar -->
+<servlet>
+    <servlet-name>SwaggerUiServlet</servlet-name>
+    <servlet-class>com.example.openapi.SwaggerUiServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
+</servlet>
+<servlet-mapping>
+    <servlet-name>SwaggerUiServlet</servlet-name>
+    <url-pattern>/swagger-ui/*</url-pattern>
+</servlet-mapping>

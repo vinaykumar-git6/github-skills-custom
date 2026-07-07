@@ -1,0 +1,34 @@
+<!--
+  pom.xml SNIPPET for the Java 7 static-spec + Swagger UI approach.
+  Merge these into the project's existing <dependencies> and <build> sections.
+  All versions chosen to be compatible with a Java 7 build.
+-->
+
+<!-- Add to <dependencies> -->
+<dependencies>
+    <!-- Swagger UI static assets (renders OpenAPI 3.0 from static hosting) -->
+    <dependency>
+        <groupId>org.webjars</groupId>
+        <artifactId>swagger-ui</artifactId>
+        <version>3.52.5</version>
+    </dependency>
+</dependencies>
+
+<!-- Add to <build><plugins> to run the app locally on a port (Jetty, Java 7 friendly) -->
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-maven-plugin</artifactId>
+            <version>9.2.30.v20200428</version>
+            <configuration>
+                <httpConnector>
+                    <port>8080</port>
+                </httpConnector>
+                <webApp>
+                    <contextPath>/legacy-customer-api</contextPath>
+                </webApp>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>

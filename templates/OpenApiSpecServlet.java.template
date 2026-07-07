@@ -1,0 +1,71 @@
+package com.example.openapi;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * TEMPLATE (Java 7 compatible).
+ *
+ * <p>Serves the hand-authored OpenAPI 3.0 specification from the classpath.
+ * Map this servlet to {@code /openapi.yaml} and {@code /openapi.json} (see
+ * web-xml-snippet.xml). Both spec files are authored under
+ * {@code src/main/resources/openapi/} so no runtime YAML->JSON conversion is
+ * needed on Java 7.</p>
+ *
+ * <p>Rename the package to match the target project before adding it.</p>
+ */
+public class OpenApiSpecServlet extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
+
+    private static final String YAML_RESOURCE = "/openapi/openapi.yaml";
+    private static final String JSON_RESOURCE = "/openapi/openapi.json";
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String path = request.getServletPath();
+        String resource;
+        String contentType;
+
+        if (path != null && path.endsWith(".json")) {
+            resource = JSON_RESOURCE;
+            contentType = "application/json";
+        } else {
+            resource = YAML_RESOURCE;
+            contentType = "application/yaml";
+        }
+
+        InputStream in = getClass().getResourceAsStream(resource);
+        if (in == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND,
+                    "Spec resource not found: " + resource);
+            return;
+        }
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType(contentType);
+        response.setCharacterEncoding("UTF-8");
+        // Allow Swagger UI served from the same origin to fetch the spec.
+        response.setHeader("Access-Control-Allow-Origin", "*");
+
+        OutputStream out = response.getOutputStream();
+        try {
+            byte[] buffer = new byte[4096];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            out.flush();
+        } finally {
+            in.close();
+        }
+    }
+}
