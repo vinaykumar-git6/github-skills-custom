@@ -43,6 +43,60 @@ java-openapi-spec-generator/
     web-xml-snippet.xml
 ```
 
+## Installation
+
+### Option 1 — Install via VS Code (recommended)
+
+1. Open VS Code and make sure the **GitHub Copilot** extension is installed and signed in.
+2. Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run
+   **"GitHub Copilot: Install Chat Extension from Local Folder…"** (or drag-and-drop the
+   skill folder into the Extensions view).
+3. Point it at this folder (`java-openapi-spec-generator/`).  
+   VS Code will register `SKILL.md` so Copilot picks it up automatically.
+
+### Option 2 — Copy to your skills directory
+
+Copy the entire `java-openapi-spec-generator/` folder into your user skills directory:
+
+| OS | Path |
+|----|------|
+| Windows | `%USERPROFILE%\.copilot\skills\` |
+| macOS / Linux | `~/.copilot/skills/` |
+
+```
+# Windows (PowerShell)
+Copy-Item -Recurse .\java-openapi-spec-generator "$env:USERPROFILE\.copilot\skills\"
+
+# macOS / Linux
+cp -r java-openapi-spec-generator ~/.copilot/skills/
+```
+
+Restart VS Code after copying.
+
+### Option 3 — Clone directly into the skills directory
+
+```bash
+# macOS / Linux
+cd ~/.copilot/skills
+git clone https://github.com/vinaykumar-git6/github-skills-custom.git java-openapi-spec-generator
+
+# Windows (PowerShell)
+Set-Location "$env:USERPROFILE\.copilot\skills"
+git clone https://github.com/vinaykumar-git6/github-skills-custom.git java-openapi-spec-generator
+```
+
+### Verify installation
+
+Open a Copilot Chat panel and type:
+
+```
+@workspace What skills do you have available?
+```
+
+You should see **java-openapi-spec-generator** listed.
+
+---
+
 ## Usage
 
 Ask Copilot something like:
